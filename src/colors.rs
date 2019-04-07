@@ -137,9 +137,9 @@ impl From<RgbaColorType> for HslaColorType {
         let mut h: f64;
         let mut s: f64;
         let mut l: f64;
-        let mut r: f64 = c.r;
-        let mut g: f64 = c.g;
-        let mut b: f64 = c.b;
+        let r: f64 = c.r;
+        let g: f64 = c.g;
+        let b: f64 = c.b;
 
         let max: f64 = c.r.max(c.g).max(c.b);
         let min: f64 = c.r.min(c.g).min(c.b);
@@ -147,7 +147,8 @@ impl From<RgbaColorType> for HslaColorType {
         s = h;
         l = h;
 
-        if max == min {
+        let error = 0.00001;
+        if (max - min).abs() < error {
             // achromatic
 
             h = 0.0;
@@ -159,20 +160,19 @@ impl From<RgbaColorType> for HslaColorType {
             } else {
                 d / (max + min)
             };
-
-            if max == r {
+            if (max - r).abs() < error {
                 h = (g - b) / d + (if g < b { 6.0 } else { 0.0 })
-            } else if max == g {
+            } else if (max - g).abs() < error {
                 h = (b - r) / d + 2.0
-            } else if max == b {
+            } else if (max - b).abs() < error {
                 h = (r - g) / d + 4.0;
             }
 
-            h = h / 6.0;
+            h /= 6.0;
         }
-        h = 360.0 * h;
-        s = 100.0 * s;
-        l = 100.0 * l;
+        h *= 360.0;
+        s *= 100.0;
+        l *= 100.0;
 
         HslaColorType::new(h, s, l)
     }
@@ -272,7 +272,7 @@ mod tests {
         assert_eq!(a, b.into());
     }
     fn error(c: RgbaColorType, d: RgbaColorType) -> f64 {
-        let mut e = c.r - d.r + c.g - d.g + c.b - d.b + c.a - d.a;
+        let e = c.r - d.r + c.g - d.g + c.b - d.b + c.a - d.a;
         e / 4.0
     }
 }
