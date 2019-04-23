@@ -1,6 +1,6 @@
 
-pub mod colors;
-
+mod colors;
+pub use colors::*;
 
 #[cfg(test)]
 mod tests {

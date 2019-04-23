@@ -1,25 +1,28 @@
 use std::fmt::{Display, Error};
-use std::result::Result;
 
-pub trait Color {
+pub trait Color: Copy {
     type Type;
     fn complement(&self) -> Self::Type;
+
+    fn get_rgba(&self) -> RgbaColorType;
+    fn get_hsla(&self) -> HslaColorType;
+    fn set_opacity(&mut self, a: f64) -> Self::Type;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RgbaColorType {
-    r: f64,
-    g: f64,
-    b: f64,
-    a: f64,
+    pub r: f64,
+    pub g: f64,
+    pub b: f64,
+    pub a: f64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct HslaColorType {
-    h: f64,
-    s: f64,
-    l: f64,
-    a: f64,
+    pub h: f64,
+    pub s: f64,
+    pub l: f64,
+    pub a: f64,
 }
 
 impl RgbaColorType {
@@ -92,9 +95,9 @@ impl From<[f64; 3]> for RgbaColorType {
 impl From<[u8; 3]> for RgbaColorType {
     fn from(c: [u8; 3]) -> RgbaColorType {
         RgbaColorType::new(
-            (c[0] as f64 / 255.0),
-            (c[1] as f64 / 255.0),
-            (c[2] as f64 / 255.0),
+            c[0] as f64 / 255.0,
+            c[1] as f64 / 255.0,
+            c[2] as f64 / 255.0,
         )
     }
 }
@@ -106,6 +109,27 @@ impl Into<[u8; 3]> for RgbaColorType {
             (self.g * 255.0).round() as u8,
             (self.b * 255.0).round() as u8,
         ]
+    }
+}
+impl Into<[u8; 4]> for RgbaColorType {
+    fn into(self) -> [u8; 4] {
+        [
+            (self.r * 255.0).round() as u8,
+            (self.g * 255.0).round() as u8,
+            (self.b * 255.0).round() as u8,
+            (self.a * 255.0).round() as u8,
+        ]
+    }
+}
+impl Into<[f64; 4]> for RgbaColorType {
+    fn into(self) -> [f64; 4] {
+        [self.r, self.g, self.b, self.a]
+    }
+}
+
+impl Into<[f32; 4]> for RgbaColorType {
+    fn into(self) -> [f32; 4] {
+        [self.r as f32, self.g as f32, self.b as f32, self.a as f32]
     }
 }
 impl From<HslaColorType> for RgbaColorType {
@@ -185,8 +209,19 @@ impl Display for RgbaColorType {
 impl Color for RgbaColorType {
     type Type = RgbaColorType;
 
+    fn set_opacity(&mut self, a:  f64) -> Self::Type {
+        self.a = a;
+        *self
+    }
+
     fn complement(&self) -> Self::Type {
-        RgbaColorType::new(1.0 - self.r, 1.0 - self.g, 1.0 - self.b)
+        RgbaColorType{r:1.0 - self.r, g: 1.0 - self.g, b: 1.0 - self.b, a: self.a}
+    }
+    fn get_hsla(&self) -> HslaColorType {
+        (*self).into()
+    }
+    fn get_rgba(&self) -> RgbaColorType {
+        *self
     }
 }
 
