@@ -8,5 +8,6 @@ include = [
         "Cargo.toml",
         "src/*"
 ]
-
+description = "rust library for handling colors"
+license="Unilicense"
 [dependencies]
