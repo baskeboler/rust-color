@@ -1,7 +1,12 @@
 [package]
-name = "colors"
+name = "rust-color"
 version = "0.1.0"
 authors = ["Victor Gil <baskeboler@gmail.com>"]
 edition = "2018"
+repository = "https://github.com/baskeboler/rust-color.git"
+include = [
+        "Cargo.toml",
+        "src/*"
+]
 
 [dependencies]
