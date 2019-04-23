@@ -9,5 +9,5 @@ include = [
         "src/*"
 ]
 description = "rust library for handling colors"
-license="Unilicense"
+license="Unlicense"
 [dependencies]
